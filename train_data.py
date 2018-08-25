@@ -35,16 +35,16 @@ dictionary = set(word.lower() for passage in train for word in word_tokenize(pas
 freq_n1 = nltk.FreqDist(dictionary)
 # freq.plot(cumulative=False)
 # print(dictionary)
-# print(text)
+print(freq_n1)
 
 ######################################################
 # Frequency distribution for bigrams, n-grams.
 ######################################################
 # This creates n-grams (n=3) for sentences that make up our textself.
 # Each sentence is a description of why a donation is needed for a particular project.
-d3 = ngramize(text,n=3)
-freq_n3 = nltk.FreqDist(d3)
-freq_n3.plot(cumulative=False)
+# d3 = ngramize(text,n=3)
+# freq_n3 = nltk.FreqDist(d3)
+# freq_n3.plot(cumulative=False)
 
 
 # Predict things
