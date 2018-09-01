@@ -3,6 +3,7 @@ import nltk
 # from sklearn.linear_model import SGDClassifier
 # from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk import sent_tokenize, word_tokenize, ngrams
+from nltk.corpus import stopwords
 
 def ngramize(texts, n):
     output=[]
@@ -28,13 +29,20 @@ for i in range(len(train)):
 
 # This is two for loops.
 # It splits up all words, in the process of creating a set of all words in the text.
-dictionary = set(word.lower() for passage in train for word in word_tokenize(passage[0]))
+dictionary = list(word.lower().encode("utf-8") for passage in train for word in word_tokenize(passage[0]))
+# dictionary = dictionary[:100]
 
 # Eliminate stop words
+stop_words = set(stopwords.words('english'))
+filtered_sentence = [w for w in dictionary if not w in stop_words]
 
-freq_n1 = nltk.FreqDist(dictionary)
-# freq.plot(cumulative=False)
-# print(dictionary)
+# Eliminate punctuation
+punct_words = set(['.',',','?','!','\"','\'',':',';','\\'])
+final_sentence = [w for w in filtered_sentence if not w in punct_words]
+
+# Can use dictionary or filtered_sentence as a parameter here.
+freq_n1 = nltk.FreqDist(final_sentence)
+# print(freq_n1)
 # print(text)
 
 ######################################################
@@ -42,10 +50,9 @@ freq_n1 = nltk.FreqDist(dictionary)
 ######################################################
 # This creates n-grams (n=3) for sentences that make up our textself.
 # Each sentence is a description of why a donation is needed for a particular project.
-d3 = ngramize(text,n=3)
-freq_n3 = nltk.FreqDist(d3)
-freq_n3.plot(cumulative=False)
-
+#d3 = ngramize(text,n=3)
+#freq_n3 = nltk.FreqDist(d3)
+freq_n1.plot(50, cumulative=False, title='Most Common Words')
 
 # Predict things
 
