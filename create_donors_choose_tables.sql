@@ -1,7 +1,9 @@
--- Remove '' and 'NaN' values in project_short_description.
+-- Remove '' and 'NaN' values in project_short_description, in Python.
+-- Replace missing data with ''. (use psql)
 -- (Problems on line 9(project_fully_funded_date) and 3624 (project_short_description))
 DROP TABLE IF EXISTS public.project;
 CREATE TABLE public.project (
+  id INTEGER,
   project_id BYTEA,
   school_id BYTEA,
   teacher_id BYTEA,
@@ -26,7 +28,7 @@ DROP TABLE IF EXISTS public.school;
 CREATE TABLE public.school (
   school_id BYTEA,
   --school_name VARCHAR(250),
-  school_morphology VARCHAR(100),
+  school_morphology VARCHAR(100),g
   school_percentage_reduced_free_lunch INTEGER,
   school_state VARCHAR(50),
   --school_zip CHAR(5),

@@ -4,11 +4,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-boston = load_boston()
-print(boston.head())
+# boston = load_boston()
+
 
 # Make arrays for doing Random Forest Regression--X,y.
-proj = pd.read_csv('/Users/jif/Donors_choose/Projects.csv', encoding='utf-8', iterator=True, chunksize=100)
+proj = pd.read_csv('/Users/jif/Donors_choose/Projects_nans_replaced.csv', encoding='utf-8', iterator=True, chunksize=10000)
 proj_chunk_one = proj.get_chunk(100)
 
 school = pd.read_csv('/Users/jif/Donors_choose/Schools.csv', encoding='utf-8', iterator=True, chunksize=100)
@@ -30,10 +30,10 @@ teacher_chunk_one = teacher.get_chunk(100)
 # --Load report here--
 
 # There are no scl_Y values
-scl_X = school_chunk_one.values[:,:]
-
-# There are no tchr_Y values
-tchr_X = teacher_chunk_one.values[:,:]
-
-X = chunk_one.values[:,:8]
-y = chunk_one.values[:,16]
+# scl_X = school_chunk_one.values[:,:]
+#
+# # There are no tchr_Y values
+# tchr_X = teacher_chunk_one.values[:,:]
+#
+# X = chunk_one.values[:,:8]
+# y = chunk_one.values[:,16]
