@@ -1,8 +1,10 @@
-from sklearn.datasets import load_boston
-from sklearn.ensemble import RandomForestRegressor
+# from sklearn.datasets import load_boston
+# from sklearn.ensemble import RandomForestRegressor
+import nltk
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from nltk import sent_tokenize, word_tokenize, ngrams
 
 # boston = load_boston()
 def ngramize(texts, n):
@@ -32,3 +34,31 @@ raw_chunk_1 = raw.get_chunk(100)
 
 X = raw_chunk_1.values[:,3]
 y = raw_chunk_1.values[:,9]
+
+# Set up X like train (with y).
+doc_list = X.tolist()
+response_list = y.tolist()
+train = zip(doc_list,response_list)
+text = []
+
+for i in range(len(train)):
+    text.append(word_tokenize(train[i][0]))
+
+# This is two for loops.
+# It splits up all words, in the process of creating a set of all words in the text.
+dictionary = list(word.lower().encode("utf-8") for passage in train for word in word_tokenize(passage[0]))
+# dictionary = dictionary[:100]
+
+# Can use dictionary or filtered_sentence as a parameter here.
+freq_n1 = nltk.FreqDist(dictionary)
+# print(freq_n1)
+# print(text)
+
+######################################################
+# Frequency distribution for bigrams, n-grams.
+######################################################
+# This creates n-grams (n=3) for sentences that make up our textself.
+# Each sentence is a description of why a donation is needed for a particular project.
+#d3 = ngramize(text,n=3)
+#freq_n3 = nltk.FreqDist(d3)
+freq_n1.plot(50, cumulative=False, title='Most Common Words')
