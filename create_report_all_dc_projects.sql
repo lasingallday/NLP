@@ -1,5 +1,6 @@
 -- Write SQL to transform Project, School, and Teacher tables to produce new report per project, teacher, and school.
 --Load report here--
+DROP TABLE IF EXISTS public.report_all_projects;
 CREATE TABLE public.report_all_projects AS (
 SELECT DISTINCT
     p.project_id,
@@ -10,7 +11,8 @@ SELECT DISTINCT
     p.project_subject_subcategory,
     p.project_grade_level_category,
     p.project_resource_category,
-    p.project_posted_date
+    p.project_posted_date,
+    p.project_fully_funded_date
 FROM public.project p
 JOIN public.school s ON p.school_id = s.school_id
 JOIN public.teacher t ON p.teacher_id = t.teacher_id

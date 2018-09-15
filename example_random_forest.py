@@ -5,14 +5,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # boston = load_boston()
-
+def ngramize(texts, n):
+    output=[]
+    for text in texts:
+        output += ngrams(text,n)
+    return output
 
 # Make arrays for doing Random Forest Regression--X,y.
 # school = pd.read_csv('/Users/jif/Donors_choose/Schools.csv', encoding='utf-8', iterator=True, chunksize=100)
 # school_chunk_1 = school.get_chunk(100)
 # school_chunk_1 = school_chunk_1.drop(['School Name','School Zip','School City','School County'], axis=1)
 
-raw = pd.read_csv('/Users/jif/Donors_choose/report_all_projects.csv', encoding='utf-8', iterator=True, chunksize=10000)
+raw = pd.read_csv('/Users/jif/Donors_choose/report_all_projects.csv', encoding='utf-8', sep=';', iterator=True, chunksize=10000)
 raw_chunk_1 = raw.get_chunk(100)
 
 # Determine whether the project will get funded--
@@ -26,5 +30,5 @@ raw_chunk_1 = raw.get_chunk(100)
 # # There are no tchr_Y values
 # tchr_X = teacher_chunk_1.values[:,:]
 
-X = chunk_one.values[:,:8]
-y = chunk_one.values[:,16]
+X = raw_chunk_1.values[:,3]
+y = raw_chunk_1.values[:,9]
