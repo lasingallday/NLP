@@ -5,7 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 # from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk import sent_tokenize, word_tokenize, ngrams
 
-raw = pd.read_csv('/Users/jt/Documents/fun_projects/Projects.csv', encoding='utf-8', iterator=True, chunksize=100)
+raw = pd.read_csv('/Users/jif/Donors_choose/Projects.csv', encoding='utf-8', iterator=True, chunksize=100)
 # 18 col--column header = project_id, school_id, teacher_id, teacher_project_posted_sequence, project_type, project_title, project_essay,
 # project_short_description, project_need_statement, project_subject_category_tree, project_subject_subcategory_tree, project_grade_level_category,
 # project_resource_category, project_cost, project_posted_date, project_expiration_date, project_current_status, project_fully_funded_date
