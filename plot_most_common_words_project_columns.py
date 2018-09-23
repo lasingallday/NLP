@@ -1,6 +1,4 @@
-# from sklearn.datasets import load_boston
 # from sklearn.ensemble import RandomForestRegressor
-import math
 import nltk
 import pandas as pd
 import numpy as np
@@ -85,9 +83,16 @@ freq_n1.plot(50, cumulative=False, title='Most Common Words')
 
 # Predict things
 
-# This is two for loops.
-# It splits up all words, in the process of creating a set of all words in the text.
-# dictionary = set(word.lower() for passage in res for word in word_tokenize(passage[0]))
+dictionary = []
+for passage in train:
+    if passage[0] == passage[0]:
+        for word in word_tokenize(passage[0]):
+            # print(word.lower())
+            dictionary.append(word.lower().encode("utf-8"))
+
+# Use only the set of dictionary words, with their likelihood of being funded, to predict whether passage will be funded.
+
+
 # This is two for loops, with a dictionary created.
 # It compares all words in train, with all words in dictionary. Then it adds the sentiment.
-# t = [({word: (word in word_tokenize(x[0])) for word in dictionary}, x[1]) for x in train]
+t = [({word: (word in word_tokenize(x[0])) for word in dictionary}, x[1]) for x in train]
