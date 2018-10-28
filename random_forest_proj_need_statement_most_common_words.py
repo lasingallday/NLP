@@ -1,3 +1,4 @@
+# from sklearn.datasets import load_boston
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 import nltk
 import pandas as pd
@@ -7,6 +8,12 @@ from nltk.corpus import stopwords
 from numpy import argmax, array
 import csv
 
+# boston = load_boston()
+def ngramize(texts, n):
+    output=[]
+    for text in texts:
+        output += ngrams(text,n)
+    return output
 
 # Make arrays for doing Random Forest Regression--X,y.
 # school = pd.read_csv('/Users/jif/Donors_choose/Schools.csv', encoding='utf-8', iterator=True, chunksize=100)
@@ -29,23 +36,47 @@ print(list(df_empty.columns.values))
 X = df_empty.values[:,3]
 y = df_empty.values[:,9]
 
+# Set up X like train (with y).
+doc_list = X.tolist()
+response_list = y.tolist()
+train = zip(doc_list,response_list)
+text = []
+
+for i in range(len(train)):
+    # print(i," ",train[i][0])
+    if train[i][0] == train[i][0]:
+        # print("list is empty")
+        text.append(word_tokenize(train[i][0]))
+
+dictionary = []
+for passage in train:
+    if passage[0] == passage[0]:
+        for word in word_tokenize(passage[0]):
+            # print(word.lower())
+            dictionary.append(word.lower().encode("utf-8"))
+
+# Eliminate stop words
+stop_words = set(stopwords.words('english'))
+filtered_sentence = [w for w in dictionary if not w in stop_words]
+
+# Eliminate punctuation
+punct_words = set(['.',',','?','!','\"','\'',':',';','\\','&'])
+proj_specific_stop_words = set(['need','students'])
+final_sentence = [w for w in filtered_sentence if not w in punct_words and w not in proj_specific_stop_words]
+
+######################################################
+# Frequency distribution for bigrams, n-grams.
+######################################################
+# Can use dictionary or filtered_sentence as a parameter here.
+freq_n1 = nltk.FreqDist(final_sentence)
 
 with open('/Users/jif/Donors_choose/fifty_most_common_words-proj_need_statement.csv','w') as f:
     commonwriter = csv.writer(f,delimiter=',',quotechar='"')
     for item in freq_n1.most_common(50):
         commonwriter.writerow([item[0], item[1]])
 
-
-# Predict things
-
-# Use only the set of dictionary words, with their likelihood of being funded, to predict whether passage will be funded.
-# Make X and y like in load_boston
-
-# Do a one-hot enocding for the top 50 common words. (Can also try binary in top 50/not in top 50)
-
-
-# Run logistic regression for whether the passage will be funded or not.
-
-# This is two for loops, with a dictionary created.
-# It compares all words in train, with all words in dictionary. Then it adds the sentiment.
-#t = [({word: (word in word_tokenize(x[0])) for word in dictionary}, x[1]) for x in train]
+# This creates n-grams (n=3) for sentences that make up our textself.
+# Each sentence is a description of why a donation is needed for a particular project.
+#d3 = ngramize(text,n=3)
+#freq_n3 = nltk.FreqDist(d3)
+# freq_n1.plot(50, cumulative=False, title='Most Common Words')
