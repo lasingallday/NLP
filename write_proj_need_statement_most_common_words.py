@@ -1,14 +1,10 @@
-# from sklearn.datasets import load_boston
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 import nltk
 import pandas as pd
 import matplotlib.pyplot as plt
 from nltk import sent_tokenize, word_tokenize, ngrams
 from nltk.corpus import stopwords
-from numpy import argmax, array
 import csv
 
-# boston = load_boston()
 def ngramize(texts, n):
     output=[]
     for text in texts:
@@ -35,6 +31,8 @@ print(list(df_empty.columns.values))
 
 X = df_empty.values[:,3]
 y = df_empty.values[:,9]
+
+# ADD IN WHETHER PROJECT WAS FUNDED OR NOT, AS PERCENTAGE PER WORD.
 
 # Set up X like train (with y).
 doc_list = X.tolist()
@@ -72,6 +70,7 @@ freq_n1 = nltk.FreqDist(final_sentence)
 
 with open('/Users/jif/Donors_choose/fifty_most_common_words-proj_need_statement.csv','w') as f:
     commonwriter = csv.writer(f,delimiter=',',quotechar='"')
+    commonwriter.writerow(["common_word","counts"])
     for item in freq_n1.most_common(50):
         commonwriter.writerow([item[0], item[1]])
 
