@@ -12,7 +12,7 @@ def ngramize(texts, n):
     return output
 
 chunksize = 10 ** 6
-raw = pd.read_csv(u'/Users/jif/Donors_choose/train.csv', nrows=100)
+raw = pd.read_csv(u'/Users/jif/Donors_choose/report_all_projects.csv', nrows=100)
 # print(raw.head())
 
 X = raw.values[:,13]

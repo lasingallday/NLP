@@ -17,7 +17,17 @@ FROM public.project p
 JOIN public.school s ON p.school_id = s.school_id
 JOIN public.teacher t ON p.teacher_id = t.teacher_id
 );
--- Next, if it is useful, add more project columns.
+-- Add project column for identifying funded projects.
+ALTER TABLE public.report_all_projects ADD COLUMN flag_project_funded BOOLEAN;
+
+UPDATE public.report_all_projects
+SET flag_project_funded = FALSE
+WHERE project_fully_funded_date IS NULL;
+
+UPDATE public.report_all_projects
+SET flag_project_funded = TRUE
+WHERE project_fully_funded_date IS NOT NULL;
+
 
 -- Statistics:
 -- Number distinct project_id's = 1,110,015

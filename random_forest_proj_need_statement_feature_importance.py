@@ -7,8 +7,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from nltk import sent_tokenize, word_tokenize, ngrams
 from nltk.corpus import stopwords
-from numpy import argmax, array
+import numpy as np
 import csv
+
+def ngramize(texts, n):
+    output=[]
+    for text in texts:
+        output += ngrams(text,n)
+    return output
 
 # Determine whether the project will get funded--
 # change project will make(subject/object cost/use), how desperately class needs it(geographical location (school state, morphology)/school district (school district)/description of students (percentage of students free lunch)),
@@ -16,14 +22,12 @@ import csv
 
 
 # Make arrays for doing Random Forest Regression--X,y.
-raw = pd.read_csv('/Users/jif/Donors_choose/fifty_most_common_words-proj_need_statement.csv', encoding='utf-8', sep=',')
+raw = pd.read_csv('/Users/jif/Donors_choose/report_all_projects_12302018.csv', encoding='utf-8', sep=',', iterator=True, chunksize=10000)
 raw_chunk_1 = raw.get_chunk(100)
 
 df_empty = pd.DataFrame()
 for chunk in raw:
     df_empty = pd.concat([df_empty,chunk])
-
-# print(list(raw.columns.values))
 
 # Add flags for 50 most common words (actually 44, since one "word" is a null value and five words are duplicates)
 df_empty['book_flag'] = np.where(df_empty['project_need_statement'].str.contains('book'),'True','False')
@@ -71,21 +75,15 @@ df_empty['enhance_flag'] = np.where(df_empty['project_need_statement'].str.conta
 df_empty['also_flag'] = np.where(df_empty['project_need_statement'].str.contains('also'),'True','False')
 df_empty['keep_flag'] = np.where(df_empty['project_need_statement'].str.contains('keep'),'True','False')
 
+# print(list(df_empty.columns.values))
 
-# ADD IN WHETHER PROJECT WAS FUNDED OR NOT, AS PERCENTAGE PER WORD.
-# if y value is not nan, then funded. --DONE
-# fill in flag columns --DONE
-
-# Determine whether the project will get funded--
-# change project will make(subject/object cost/use), how desperately class needs it(geographical location (school state, morphology)/school district (school district)/description of students (percentage of students free lunch)),
-# gender, size of school (school district), number of projects submitted prior (transform of teacher first project posted date and count previous projects by teacher id), teacher prefix [Dr, Mr, Mrs, Ms, Teacher, N/A] (teacher prefix), teacher name (teacher id)
+# Make X and y like in load_boston (48 columns)
+X = df_empty.iloc[:,[1,2,3,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
+y = df_empty.values[:,10]
 
 
 
-# Make X and y like in load_boston
-X = raw.values[:,0]
-# y = raw.values[:,2]
-
+print(X.head())
 
 # Using the set of dictionary words and their likelihood of being funded, Predict whether passage will be funded.
 
