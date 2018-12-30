@@ -23,19 +23,11 @@ df_empty = pd.DataFrame()
 for chunk in raw:
     df_empty = pd.concat([df_empty,chunk])
 
-print(list(df_empty.columns.values))
-
-# Determine whether the project will get funded--
-# change project will make(subject/object cost/use), how desperately class needs it(geographical location (school state, morphology)/school district (school district)/description of students (percentage of students free lunch)),
-# gender, size of school (school district), number of projects submitted prior (transform of teacher first project posted date and count previous projects by teacher id), teacher prefix [Dr, Mr, Mrs, Ms, Teacher, N/A] (teacher prefix), teacher name (teacher id)
+# print(list(df_empty.columns.values))
 
 X = df_empty.values[:,3]
 y = df_empty.values[:,9]
 
-# ADD IN WHETHER PROJECT WAS FUNDED OR NOT, AS PERCENTAGE PER WORD.
-# if y value is not nan, then funded. --DONE
-# add column for flag of each 50 words. --DONE
-# fill in flag columns
 
 # Set up X like train (with y).
 doc_list = X.tolist()

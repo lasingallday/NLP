@@ -17,8 +17,70 @@ import csv
 
 # Make arrays for doing Random Forest Regression--X,y.
 raw = pd.read_csv('/Users/jif/Donors_choose/fifty_most_common_words-proj_need_statement.csv', encoding='utf-8', sep=',')
+raw_chunk_1 = raw.get_chunk(100)
+
+df_empty = pd.DataFrame()
+for chunk in raw:
+    df_empty = pd.concat([df_empty,chunk])
 
 # print(list(raw.columns.values))
+
+# Add flags for 50 most common words (actually 44, since one "word" is a null value and five words are duplicates)
+df_empty['book_flag'] = np.where(df_empty['project_need_statement'].str.contains('book'),'True','False')
+df_empty['class_flag'] = np.where(df_empty['project_need_statement'].str.contains('class'),'True','False')
+df_empty['help_flag'] = np.where(df_empty['project_need_statement'].str.contains('help'),'True','False')
+df_empty['learning_flag'] = np.where(df_empty['project_need_statement'].str.contains('learning'),'True','False')
+df_empty['reading_flag'] = np.where(df_empty['project_need_statement'].str.contains('reading'),'True','False')
+df_empty['math_flag'] = np.where(df_empty['project_need_statement'].str.contains('math'),'True','False')
+df_empty['skills_flag'] = np.where(df_empty['project_need_statement'].str.contains('skills'),'True','False')
+df_empty['ipad_flag'] = np.where(df_empty['project_need_statement'].str.contains('ipad'),'True','False')
+df_empty['use_flag'] = np.where(df_empty['project_need_statement'].str.contains('use'),'True','False')
+df_empty['learn_flag'] = np.where(df_empty['project_need_statement'].str.contains('learn'),'True','False')
+df_empty['materials_flag'] = np.where(df_empty['project_need_statement'].str.contains('materials'),'True','False')
+df_empty['technology_flag'] = np.where(df_empty['project_need_statement'].str.contains('technology'),'True','False')
+df_empty['new_flag'] = np.where(df_empty['project_need_statement'].str.contains('new'),'True','False')
+df_empty['science_flag'] = np.where(df_empty['project_need_statement'].str.contains('science'),'True','False')
+df_empty['work_flag'] = np.where(df_empty['project_need_statement'].str.contains('work'),'True','False')
+df_empty['school_flag'] = np.where(df_empty['project_need_statement'].str.contains('school'),'True','False')
+df_empty['set_flag'] = np.where(df_empty['project_need_statement'].str.contains('set'),'True','False')
+df_empty['order_flag'] = np.where(df_empty['project_need_statement'].str.contains('order'),'True','False')
+df_empty['center_flag'] = np.where(df_empty['project_need_statement'].str.contains('center'),'True','False')
+df_empty['read_flag'] = np.where(df_empty['project_need_statement'].str.contains('read'),'True','False')
+df_empty['paper_flag'] = np.where(df_empty['project_need_statement'].str.contains('paper'),'True','False')
+df_empty['create_flag'] = np.where(df_empty['project_need_statement'].str.contains('create'),'True','False')
+df_empty['chromebooks_flag'] = np.where(df_empty['project_need_statement'].str.contains('chromebooks'),'True','False')
+df_empty['seating_flag'] = np.where(df_empty['project_need_statement'].str.contains('seating'),'True','False')
+df_empty['activities_flag'] = np.where(df_empty['project_need_statement'].str.contains('activities'),'True','False')
+df_empty['literacy_flag'] = np.where(df_empty['project_need_statement'].str.contains('literacy'),'True','False')
+df_empty['access_flag'] = np.where(df_empty['project_need_statement'].str.contains('access'),'True','False')
+df_empty['game_flag'] = np.where(df_empty['project_need_statement'].str.contains('game'),'True','False')
+df_empty['2_flag'] = np.where(df_empty['project_need_statement'].str.contains('2'),'True','False')
+df_empty['chair_flag'] = np.where(df_empty['project_need_statement'].str.contains('chair'),'True','False')
+df_empty['headphones_flag'] = np.where(df_empty['project_need_statement'].str.contains('headphones'),'True','False')
+df_empty['time_flag'] = np.where(df_empty['project_need_statement'].str.contains('time'),'True','False')
+df_empty['writing_flag'] = np.where(df_empty['project_need_statement'].str.contains('writing'),'True','False')
+df_empty['library_flag'] = np.where(df_empty['project_need_statement'].str.contains('library'),'True','False')
+df_empty['art_flag'] = np.where(df_empty['project_need_statement'].str.contains('art'),'True','False')
+df_empty['practice_flag'] = np.where(df_empty['project_need_statement'].str.contains('practice'),'True','False')
+df_empty['marker_flag'] = np.where(df_empty['project_need_statement'].str.contains('marker'),'True','False')
+df_empty['improve_flag'] = np.where(df_empty['project_need_statement'].str.contains('improve'),'True','False')
+df_empty['two_flag'] = np.where(df_empty['project_need_statement'].str.contains('two'),'True','False')
+df_empty['make_flag'] = np.where(df_empty['project_need_statement'].str.contains('make'),'True','False')
+df_empty['project_flag'] = np.where(df_empty['project_need_statement'].str.contains('project'),'True','False')
+df_empty['enhance_flag'] = np.where(df_empty['project_need_statement'].str.contains('enhance'),'True','False')
+df_empty['also_flag'] = np.where(df_empty['project_need_statement'].str.contains('also'),'True','False')
+df_empty['keep_flag'] = np.where(df_empty['project_need_statement'].str.contains('keep'),'True','False')
+
+
+# ADD IN WHETHER PROJECT WAS FUNDED OR NOT, AS PERCENTAGE PER WORD.
+# if y value is not nan, then funded. --DONE
+# fill in flag columns --DONE
+
+# Determine whether the project will get funded--
+# change project will make(subject/object cost/use), how desperately class needs it(geographical location (school state, morphology)/school district (school district)/description of students (percentage of students free lunch)),
+# gender, size of school (school district), number of projects submitted prior (transform of teacher first project posted date and count previous projects by teacher id), teacher prefix [Dr, Mr, Mrs, Ms, Teacher, N/A] (teacher prefix), teacher name (teacher id)
+
+
 
 # Make X and y like in load_boston
 X = raw.values[:,0]
