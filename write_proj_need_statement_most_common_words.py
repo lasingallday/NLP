@@ -33,6 +33,9 @@ X = df_empty.values[:,3]
 y = df_empty.values[:,9]
 
 # ADD IN WHETHER PROJECT WAS FUNDED OR NOT, AS PERCENTAGE PER WORD.
+# if y value is not nan, then funded. --DONE
+# add column for flag of each 50 words. --DONE
+# fill in flag columns
 
 # Set up X like train (with y).
 doc_list = X.tolist()

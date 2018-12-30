@@ -1,5 +1,7 @@
 # from sklearn.datasets import load_boston
+# boston = load_boston()
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.ensemble import RandomForestRegressor
 import nltk
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,8 +9,6 @@ from nltk import sent_tokenize, word_tokenize, ngrams
 from nltk.corpus import stopwords
 from numpy import argmax, array
 import csv
-
-# boston = load_boston()
 
 # Determine whether the project will get funded--
 # change project will make(subject/object cost/use), how desperately class needs it(geographical location (school state, morphology)/school district (school district)/description of students (percentage of students free lunch)),
@@ -45,16 +45,18 @@ values = array(X)
 # integer encode
 label_encoder = LabelEncoder()
 integer_encoded = label_encoder.fit_transform(values)
-# binary encode
+# binary encode (integer_encoded is the mapped numbers for string values,
+# onehot_encoded is the resultant is the bit encodings for the integer_encoded numbers).
 onehot_encoder = OneHotEncoder(sparse=False)
 integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
 onehot_encoded = onehot_encoder.fit_transform(integer_encoded)
+print(onehot_encoded)
 
 # Set classes, in-top-50 and not-in-top-50. (Optional)
 
-# RUN LOGISTIC REGRESSION for whether the passage will be funded or not.
-# clf = LogisticRegression(random_state=0, solver='lbfgs',
-#                          multi_class='multinomial').fit(X, y)
+# RUN LOGISTIC REGRESSION for whether the passage will be funded or not. (Add one-hot encoded values?)
+clf = LogisticRegression(random_state=0, solver='lbfgs',
+                         multi_class='multinomial').fit(X, y)
 
 
 # This is two for loops, with a dictionary created.

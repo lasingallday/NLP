@@ -1,4 +1,6 @@
 -- Remove '' and 'NaN' values in project_short_description, in Python.
+-- Also, first create table with all columns, second import data, append
+-- third remove commented columns.
 DROP TABLE IF EXISTS public.project;
 CREATE TABLE public.project (
   id INTEGER,
