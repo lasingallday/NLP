@@ -18,14 +18,15 @@ JOIN public.school s ON p.school_id = s.school_id
 JOIN public.teacher t ON p.teacher_id = t.teacher_id
 );
 -- Add project column for identifying funded projects.
-ALTER TABLE public.report_all_projects ADD COLUMN flag_project_funded BOOLEAN;
+ALTER TABLE public.report_all_projects DROP COLUMN flag_project_funded;
+ALTER TABLE public.report_all_projects ADD COLUMN flag_project_funded INTEGER;
 
 UPDATE public.report_all_projects
-SET flag_project_funded = FALSE
+SET flag_project_funded = 0
 WHERE project_fully_funded_date IS NULL;
 
 UPDATE public.report_all_projects
-SET flag_project_funded = TRUE
+SET flag_project_funded = 1
 WHERE project_fully_funded_date IS NOT NULL;
 
 
