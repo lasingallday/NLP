@@ -3,11 +3,24 @@
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn import preprocessing
+from sklearn.cross_validation import train_test_split
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
+from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import matthews_corrcoef
 import nltk
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+def print_metrics(y_actual, y_predict):
+    """Prints multiple metrics"""
+
+    print "Accuracy:", (y_predict == y_actual).mean()
+    print "Precision:", precision_score(y_actual, y_predict)
+    print "Recall:", recall_score(y_actual, y_predict)
+    print "F1-score:", f1_score(y_actual, y_predict)
+    print "Matthews correlation coefficient:", matthews_corrcoef(y_actual, y_predict)
+    print '\n'
 
 # Determine whether the project will get funded--
 # change project will make(subject/object cost/use), how desperately class needs it(geographical location (school state, morphology)/school district (school district)/description of students (percentage of students free lunch)),
@@ -81,14 +94,13 @@ X = df_empty.iloc[:,[11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30
 y = df_empty.iloc[:,10]
 # print(X.head())
 
-
 # Using the set of dictionary words and their likelihood of being funded, Predict whether passage will be funded.
-
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8)
 # RUN LOGISTIC REGRESSION for whether the passage will be funded or not.
 clf = LogisticRegression(random_state=0, solver='lbfgs',
-                         multi_class='multinomial').fit(X, y)
+                         multi_class='multinomial').fit(X_train, y_train)
 
-
+print_metrics(y_test, clf.predict(X_test))
 # This is two for loops, with a dictionary created.
 # It compares all words in train, with all words in dictionary. Then it adds the sentiment.
 #t = [({word: (word in word_tokenize(x[0])) for word in dictionary}, x[1]) for x in train]
