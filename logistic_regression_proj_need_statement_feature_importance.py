@@ -1,6 +1,6 @@
 # from sklearn.datasets import load_boston
 # boston = load_boston()
-from sklearn.ensemble import RandomForestRegressor
+# from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn import preprocessing
 from sklearn.cross_validation import train_test_split
@@ -81,16 +81,15 @@ df_empty['enhance_flag'] = np.where(df_empty['project_need_statement'].str.conta
 df_empty['also_flag'] = np.where(df_empty['project_need_statement'].str.contains('also'),1,0)
 df_empty['keep_flag'] = np.where(df_empty['project_need_statement'].str.contains('keep'),1,0)
 
-# Hash function code snippet,
-# myData=np.genfromtxt(filecsv, delimiter=",", dtype ="|a20" ,skip_header=1);
-# le = preprocessing.LabelEncoder()
-# for i in range(0,2):
-#     myData[:,i] = le.fit_transform(myData[:,i])
+# Encode hash functions (into integers).
+le = preprocessing.LabelEncoder()
+for i in range(2,4):
+    df_empty.ix[:,i] = le.fit_transform(df_empty.ix[:,i])
 
 # print(list(df_empty.columns.values))
 
-# Make X and y like in load_boston (X has 47 columns). ADD columns 1, 2, 3 (with their hash functions)
-X = df_empty.iloc[:,[11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
+# Load X and y like in load_boston (X has 49 columns).
+X = df_empty.iloc[:,[2,3,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
 y = df_empty.iloc[:,10]
 # print(X.head())
 
@@ -101,6 +100,3 @@ clf = LogisticRegression(random_state=0, solver='lbfgs',
                          multi_class='multinomial').fit(X_train, y_train)
 
 print_metrics(y_test, clf.predict(X_test))
-# This is two for loops, with a dictionary created.
-# It compares all words in train, with all words in dictionary. Then it adds the sentiment.
-#t = [({word: (word in word_tokenize(x[0])) for word in dictionary}, x[1]) for x in train]
