@@ -1,8 +1,11 @@
 # from sklearn.datasets import load_boston
 # boston = load_boston()
 # from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import LogisticRegression
 from sklearn import preprocessing
+# from sklearn import svm
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForest
+from sklearn.model_selection import GridSearchCV
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
 from sklearn.metrics import roc_curve, auc
@@ -15,12 +18,12 @@ import numpy as np
 def print_metrics(y_actual, y_predict):
     """Prints multiple metrics"""
 
-    print "Accuracy:", (y_predict == y_actual).mean()
-    print "Precision:", precision_score(y_actual, y_predict)
-    print "Recall:", recall_score(y_actual, y_predict)
-    print "F1-score:", f1_score(y_actual, y_predict)
-    print "Matthews correlation coefficient:", matthews_corrcoef(y_actual, y_predict)
-    print '\n'
+    print("Accuracy:", (y_predict == y_actual).mean())
+    print("Precision:", precision_score(y_actual, y_predict))
+    print("Recall:", recall_score(y_actual, y_predict))
+    print("F1-score:", f1_score(y_actual, y_predict))
+    print("Matthews correlation coefficient:", matthews_corrcoef(y_actual, y_predict))
+    print('\n')
 
 # Determine whether the project will get funded--
 # change project will make(subject/object cost/use), how desperately class needs it(geographical location (school state, morphology)/school district (school district)/description of students (percentage of students free lunch)),
@@ -96,7 +99,45 @@ y = df_empty.iloc[:,10]
 # Using the set of dictionary words and their likelihood of being funded, Predict whether passage will be funded.
 X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8)
 # RUN LOGISTIC REGRESSION for whether the passage will be funded or not.
-clf = LogisticRegression(random_state=0, solver='lbfgs',
-                         multi_class='multinomial').fit(X_train, y_train)
+# To run this with a GridSearch for hyperparameters remove the fit function. Then use the LogisticRegression as
+# a paremter in a GridSearchCV function.
+# clf = LogisticRegression(random_state=0, solver='lbfgs',
+#                          multi_class='multinomial').fit(X_train, y_train)
+# GIVES ERROR "ValueError: Solver lbfgs supports only l2 penalties, got l1 penalty."
+# logistic = LogisticRegression(random_state=0, solver='lbfgs',
+#                          multi_class='multinomial')
 
-print_metrics(y_test, clf.predict(X_test))
+# Create logistic regression model
+logistic = LogisticRegression()
+# Logistic Regression hyperparameters
+# Create regularization penalty space
+penalty = ['l1', 'l2']
+# Create regularization hyperparameter space
+C = np.logspace(0, 4, 10)
+# Create hyperparameter options
+hyperparameters = dict(C=C, penalty=penalty)
+
+# Create SVC model. Support Vector Classification models take forever to train past 10,000 rows.
+# svc = svm.SVC()
+# # SVC hyperparameters
+# parameters = {'C':[1, 10], 'kernel':('linear', 'rbf')}
+
+clf = GridSearchCV(logistic, param_grid=hyperparameters, cv=5, verbose=0)
+
+# Fit grid search
+best_model = clf.fit(X_train,y_train)
+# View best SVC hyperparameters
+# print('Best SVC Regression Paramters:', best_model.best_params_)
+# View best Logistic Regression hyperparameters
+# After that, use decision trees to predict the weak classifiers and aggregate the DT's to make a
+# prediction (i.e. perform an ensemble method prediction)
+print('Best Penalty:', best_model.best_estimator_.get_params()['penalty'])
+print('Best C:', best_model.best_estimator_.get_params()['C'])
+
+# print_metrics(y_test, clf.predict(X_test))
+# ypred = clf.predict(X_test)
+# conf_mat = confusion_matrix(y_test,ypred)
+# print(conf_mat)
+
+# RUN RANDOM FOREST CLASSIFICATION for whether the passage will be funded or not.
+# clf = RandomForestClassifier(n_estimators=10)
