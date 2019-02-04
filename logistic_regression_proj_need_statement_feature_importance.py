@@ -3,7 +3,7 @@
 # from sklearn.ensemble import RandomForestRegressor
 from sklearn import preprocessing
 # from sklearn import svm
-# from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.cross_validation import train_test_split
@@ -98,6 +98,7 @@ y = df_empty.iloc[:,10]
 
 # Using the set of dictionary words and their likelihood of being funded, Predict whether passage will be funded.
 X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8)
+
 # RUN LOGISTIC REGRESSION for whether the passage will be funded or not.
 # To run this with a GridSearch for hyperparameters remove the fit function. Then use the LogisticRegression as
 # a paremter in a GridSearchCV function.
@@ -108,15 +109,17 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8)
 #                          multi_class='multinomial')
 
 # Create logistic regression model
-# logistic = LogisticRegression()
-# # Logistic Regression hyperparameters
-# # Create regularization penalty space
-# penalty = ['l1', 'l2']
-# # Create regularization hyperparameter space
-# C = np.logspace(0, 4, 10)
-# # Create hyperparameter options
-# hyperparameters = dict(C=C, penalty=penalty)
+logistic = LogisticRegression(penalty='l2', C=1.0, random_state=0, solver='sag')
+# Logistic Regression hyperparameters
+# Create regularization penalty space
+penalty = ['l1', 'l2']
+# Create regularization hyperparameter space
+# Should these be 0.01, 0.1, and 1.0 instead?
+C = np.logspace(0, 4, 10)
+# Create hyperparameter options
+hyperparameters = dict(C=C, penalty=penalty)
 
+# RUN SUPPORT VECTOR CLASSIFICATION for whether the passage will be funded or not.
 # Create SVC model. Support Vector Classification models take forever to train past 10,000 rows.
 # svc = svm.SVC()
 # # SVC hyperparameters
@@ -125,27 +128,47 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8)
 # clf = GridSearchCV(logistic, param_grid=hyperparameters, cv=5, verbose=0)
 
 # Fit grid search
-# best_model = clf.fit(X_train,y_train)
-# # View best SVC hyperparameters
-# # print('Best SVC Regression Paramters:', best_model.best_params_)
-# # View best Logistic Regression hyperparameters
-# # After that, use decision trees to predict the weak classifiers and aggregate the DT's to make a
-# # prediction (i.e. perform an ensemble method prediction)
+# best_model = logistic.fit(X_train,y_train)
+
+# View best SVC hyperparameters
+# print('Best SVC Regression Paramters:', best_model.best_params_)
+# View best Logistic Regression hyperparameters
+# After that, use decision trees to predict the weak classifiers and aggregate the DT's to make a
+# prediction (i.e. perform an ensemble method prediction).
 # print('Best Penalty:', best_model.best_estimator_.get_params()['penalty'])
 # print('Best C:', best_model.best_estimator_.get_params()['C'])
 
-# print_metrics(y_test, clf.predict(X_test))
-# ypred = clf.predict(X_test)
+# ypred = best_model.predict(X_test)
+# print_metrics(y_test, ypred)
 # conf_mat = confusion_matrix(y_test,ypred)
 # print(conf_mat)
 
 # RUN RANDOM FOREST CLASSIFICATION for whether the passage will be funded or not.
-clf = RandomForestClassifier(n_estimators=100, max_depth=2,
-                            random_state=0)
-clf.fit(X_train, y_train)
-
-print_metrics(y_test, clf.predict(X_test))
+# clf = RandomForestClassifier(n_estimators=100, max_depth=2,
+#                             random_state=0)
+# clf.fit(X_train, y_train)
+#
+# print_metrics(y_test, clf.predict(X_test))
 
 # The 14th element (column 22) is most important. It incidates whether or not "technology" is in the project need statement.
 # The 2nd element is second most important. It is either teacher_id or school_id.
 # print(clf.feature_importances_)
+
+from xgboost import XGBRegressor
+from sklearn.metrics import mean_absolute_error
+from sklearn.preprocessing import Imputer
+
+imp = Imputer()
+
+X_train = imp.fit_transform(X_train)
+X_test = imp.transform(X_test)
+
+# RUN GRADIENT BOOSTED DECISION TREE for improving error.
+xgb = XGBRegressor(n_estimators=1000)
+# Add silent=True to avoid printing out updates with each cycle
+xgb.fit(X_train, y_train, early_stopping_rounds=5,
+        eval_set=[(X_test, y_test)], verbose=False)
+
+# make predictions
+preds = xgb.predict(X_test)
+print("Mean Absolute Error : " + str(mean_absolute_error(preds, y_test)))
