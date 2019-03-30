@@ -128,28 +128,13 @@ y = df_empty.iloc[:,10]
 X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, train_size=0.8)
 
 
-# RUN LOGISTIC REGRESSION for whether the passage will be funded or not.
-# To run this with a GridSearch for hyperparameters remove the fit function. Then use the LogisticRegression as
-# a paremter in a GridSearchCV function.
-clf = LogisticRegression(random_state=0, solver='lbfgs',
-                         multi_class='multinomial').fit(X_train, y_train)
-# GIVES ERROR "ValueError: Solver lbfgs supports only l2 penalties, got l1 penalty."
-# logistic = LogisticRegression(random_state=0, solver='lbfgs',
-#                          multi_class='multinomial')
+# RUN RANDOM FOREST CLASSIFICATION for whether the passage will be funded or not.
+clf = RandomForestClassifier(n_estimators=100, max_depth=2,
+                            random_state=0)
+clf.fit(X_train, y_train)
 
-# Create logistic regression model
-logistic = LogisticRegression(penalty='l2', C=1.0, random_state=0, solver='sag')
-# Logistic Regression hyperparameters
-# Create regularization penalty space
-penalty = ['l1', 'l2']
-# Create regularization hyperparameter space
-# Should these be 0.01, 0.1, and 1.0 instead?
-C = np.logspace(0, 4, 10)
-# Create hyperparameter options
-hyperparameters = dict(C=C, penalty=penalty)
+print_metrics(y_test, clf.predict(X_test))
 
-
-ypred = clf.predict(X_test)
-print_metrics(y_test, ypred)
-conf_mat = confusion_matrix(y_test,ypred)
-print(conf_mat)
+# The 14th element (column 22) is most important. It incidates whether or not "technology" is in the project need statement.
+# The 2nd element is second most important. It is either teacher_id or school_id.
+print(clf.feature_importances_)

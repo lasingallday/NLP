@@ -131,25 +131,44 @@ X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, train
 # RUN LOGISTIC REGRESSION for whether the passage will be funded or not.
 # To run this with a GridSearch for hyperparameters remove the fit function. Then use the LogisticRegression as
 # a paremter in a GridSearchCV function.
-clf = LogisticRegression(random_state=0, solver='lbfgs',
-                         multi_class='multinomial').fit(X_train, y_train)
+# clf = LogisticRegression(random_state=0, solver='lbfgs',
+#                          multi_class='multinomial').fit(X_train, y_train)
 # GIVES ERROR "ValueError: Solver lbfgs supports only l2 penalties, got l1 penalty."
 # logistic = LogisticRegression(random_state=0, solver='lbfgs',
 #                          multi_class='multinomial')
 
-# Create logistic regression model
-logistic = LogisticRegression(penalty='l2', C=1.0, random_state=0, solver='sag')
-# Logistic Regression hyperparameters
-# Create regularization penalty space
-penalty = ['l1', 'l2']
-# Create regularization hyperparameter space
-# Should these be 0.01, 0.1, and 1.0 instead?
-C = np.logspace(0, 4, 10)
-# Create hyperparameter options
-hyperparameters = dict(C=C, penalty=penalty)
+# # Create logistic regression model
+# logistic = LogisticRegression(penalty='l2', C=1.0, random_state=0, solver='sag')
+# # Logistic Regression hyperparameters
+# # Create regularization penalty space
+# penalty = ['l1', 'l2']
+# # Create regularization hyperparameter space
+# # Should these be 0.01, 0.1, and 1.0 instead?
+# C = np.logspace(0, 4, 10)
+# # Create hyperparameter options
+# hyperparameters = dict(C=C, penalty=penalty)
 
+# RUN SUPPORT VECTOR CLASSIFICATION for whether the passage will be funded or not.
+# (SVC is not good for so much data/this Donors choose dataset)
+# Create SVC model. Support Vector Classification models take forever to train past 10,000 rows.
+svc = svm.SVC()
+# SVC hyperparameters
+parameters = {'C':[1, 10], 'kernel':('linear', 'rbf')}
 
-ypred = clf.predict(X_test)
+clf = GridSearchCV(logistic, param_grid=hyperparameters, cv=5, verbose=0)
+
+# Fit grid search
+best_model = logistic.fit(X_train,y_train)
+
+# View best SVC hyperparameters
+print('Best SVC Regression Paramters:', best_model.best_params_)
+# View best Logistic Regression hyperparameters
+# After that, use decision trees to predict the weak classifiers and aggregate the DT's to make a
+# prediction (i.e. perform an ensemble method prediction).
+print('Best Penalty:', best_model.best_estimator_.get_params()['penalty'])
+print('Best C:', best_model.best_estimator_.get_params()['C'])
+
+ypred = best_model.predict(X_test)
 print_metrics(y_test, ypred)
 conf_mat = confusion_matrix(y_test,ypred)
 print(conf_mat)

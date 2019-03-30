@@ -119,37 +119,50 @@ for i in range(2,4):
 
 # print(list(df_empty.columns.values))
 
-# Load X and y like in load_boston (X has 49 columns).
-X = df_empty.iloc[:,[2,3,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
-y = df_empty.iloc[:,10]
-# print(X.head())
+# # Load X and y like in load_boston (X has 49 columns).
+# X = df_empty.iloc[:,[2,3,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
+# y = df_empty.iloc[:,10]
+# # print(X.head())
+#
+# # Using the set of dictionary words and their likelihood of being funded, Predict whether passage will be funded.
+# X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, train_size=0.8)
 
-# Using the set of dictionary words and their likelihood of being funded, Predict whether passage will be funded.
-X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, train_size=0.8)
+# This dataframe, df, is used for XGBClassifier.
+xgb_train = df_empty.iloc[:,[2,3,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
+xgb_test = df_empty.loc[200000:800000].iloc[:,[2,3,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
 
+import xgboost as xgb
+from xgboost.sklearn import XGBClassifier
+from sklearn.grid_search import GridSearchCV
 
-# RUN LOGISTIC REGRESSION for whether the passage will be funded or not.
-# To run this with a GridSearch for hyperparameters remove the fit function. Then use the LogisticRegression as
-# a paremter in a GridSearchCV function.
-clf = LogisticRegression(random_state=0, solver='lbfgs',
-                         multi_class='multinomial').fit(X_train, y_train)
-# GIVES ERROR "ValueError: Solver lbfgs supports only l2 penalties, got l1 penalty."
-# logistic = LogisticRegression(random_state=0, solver='lbfgs',
-#                          multi_class='multinomial')
+# imp = preprocessing.Imputer()
+#
+# X_train = imp.fit_transform(X_train)
+# X_test = imp.transform(X_test)
+#
+# # RUN GRADIENT BOOSTED DECISION TREE for improving error.
+# xgb = XGBClassifier(max_depth=10, n_estimators=1000)
+# # Add silent=True to avoid printing out updates with each cycle
+# xgb.fit(X_train, y_train, early_stopping_rounds=5,
+#         eval_set=[(X_test, y_test)], verbose=False)
+#
+# # make predictions
+# preds = xgb.predict(X_test)
+# # print("Mean Absolute Error : " + str(mean_absolute_error(preds, y_test)))
+# print_metrics(y_test, preds)
 
-# Create logistic regression model
-logistic = LogisticRegression(penalty='l2', C=1.0, random_state=0, solver='sag')
-# Logistic Regression hyperparameters
-# Create regularization penalty space
-penalty = ['l1', 'l2']
-# Create regularization hyperparameter space
-# Should these be 0.01, 0.1, and 1.0 instead?
-C = np.logspace(0, 4, 10)
-# Create hyperparameter options
-hyperparameters = dict(C=C, penalty=penalty)
-
-
-ypred = clf.predict(X_test)
-print_metrics(y_test, ypred)
-conf_mat = confusion_matrix(y_test,ypred)
-print(conf_mat)
+#Choose all predictors except target & IDcols
+predictors = [x for x in xgb_train.columns if x not in ['flag_project_funded']]
+xgb1 = XGBClassifier(
+ learning_rate =0.1,
+ n_estimators=1000,
+ max_depth=5,
+ min_child_weight=1,
+ gamma=0,
+ subsample=0.65,
+ colsample_bytree=0.8,
+ objective= 'binary:logistic',
+ nthread=4,
+ scale_pos_weight=1,
+ seed=27)
+modelfit(xgb1, xgb_train, xgb_test, predictors, 'flag_project_funded')
