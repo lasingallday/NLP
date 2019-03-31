@@ -119,17 +119,17 @@ for i in range(2,4):
 
 # print(list(df_empty.columns.values))
 
-# # Load X and y like in load_boston (X has 49 columns).
-# X = df_empty.iloc[:,[2,3,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
-# y = df_empty.iloc[:,10]
-# # print(X.head())
-#
-# # Using the set of dictionary words and their likelihood of being funded, Predict whether passage will be funded.
-# X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, train_size=0.8)
+# Load X and y like in load_boston (X has 49 columns).
+X = df_empty.iloc[:,[2,3,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
+y = df_empty.iloc[:,10]
+# print(X.head())
+
+# Using the set of dictionary words and their likelihood of being funded, Predict whether passage will be funded.
+X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, train_size=0.1)
 
 # This dataframe, df, is used for XGBClassifier.
-xgb_train = df_empty.iloc[:,[2,3,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
-xgb_test = df_empty.loc[200000:800000].iloc[:,[2,3,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
+# xgb_train = df_empty[200000:300000].iloc[:,[2,3,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
+# xgb_test = df_empty.loc[200000:210000].iloc[:,[2,3,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54]]
 
 import xgboost as xgb
 from xgboost.sklearn import XGBClassifier
@@ -152,7 +152,7 @@ from sklearn.grid_search import GridSearchCV
 # print_metrics(y_test, preds)
 
 #Choose all predictors except target & IDcols
-predictors = [x for x in xgb_train.columns if x not in ['flag_project_funded']]
+predictors = [x for x in X_train.columns if x not in ['flag_project_funded']]
 xgb1 = XGBClassifier(
  learning_rate =0.1,
  n_estimators=1000,
@@ -165,4 +165,19 @@ xgb1 = XGBClassifier(
  nthread=4,
  scale_pos_weight=1,
  seed=27)
-modelfit(xgb1, xgb_train, xgb_test, predictors, 'flag_project_funded')
+
+# Fit XGBClassifier and get accuracy and ROC scores
+# modelfit(xgb1, X_train, X_test, predictors, 'flag_project_funded')
+
+# Plot XGBClassifier feature importances
+target = 'flag_project_funded'
+xgb_param = xgb1.get_xgb_params()
+xgtrain = xgb.DMatrix(X_train[predictors].values, label=X_train[target].values)
+xgtest = xgb.DMatrix(X_test[predictors].values, label=X_test[target].values)
+params = {"objective":"binary:logistic",'colsample_bytree': 0.8,'learning_rate': 0.1,
+                'max_depth': 5, 'gamma': 0}
+
+xg_reg = xgb.train(params=params, dtrain=xgtrain, num_boost_round=10)
+xgb.plot_importance(xg_reg)
+plt.rcParams['figure.figsize'] = [5, 5]
+plt.show()
